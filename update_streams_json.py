@@ -3,7 +3,8 @@
 update_streams_json.py
 
 Fetches an M3U playlist from GitHub, extracts .m3u8 links,
-and writes them to a JSON file in the detailed structure.
+and writes them to a JSON file in the detailed structure with
+timezone-aware UTC timestamps.
 """
 
 import json
@@ -11,7 +12,7 @@ import re
 import requests
 import os
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Input M3U URL
 M3U_URL = "https://raw.githubusercontent.com/Srivyaa/News_Channels/main/news_channels.m3u"
@@ -38,9 +39,9 @@ def extract_m3u8_links(m3u_content):
 
 
 def build_stream_entry(url):
-    """Build a dictionary entry in the required JSON format."""
-    now = datetime.utcnow()
-    iso_now = now.isoformat() + "Z"
+    """Build a dictionary entry in the required JSON format with timezone-aware timestamps."""
+    now = datetime.now(timezone.utc)
+    iso_now = now.strftime("%Y-%m-%dT%H:%M:%SZ")  # UTC ISO8601 with Z
     timestamp_str = now.strftime("%Y-%m-%d %H:%M:%S")
 
     entry = {
