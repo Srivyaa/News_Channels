@@ -4,6 +4,7 @@ update_streams_from_github.py
 
 Fetches an .m3u playlist from a GitHub repository,
 extracts all .m3u8 links, and updates a JSON file with them.
+Always creates streams.json even if no links are found.
 """
 
 import json
@@ -37,18 +38,17 @@ def update_json(links, json_path):
 
 def main():
     try:
+        # Try to fetch the M3U file
         m3u_content = fetch_m3u(M3U_URL)
         links = extract_m3u8_links(m3u_content)
-        if not links:
-            print("No .m3u8 links found.")
-            print("link_count=0")
-            return
-        count = update_json(links, JSON_FILE)
-        print(f"✅ Updated {JSON_FILE} with {count} links.")
-        print(f"link_count={count}")
     except Exception as e:
-        print(f"❌ Error: {e}")
-        print("link_count=0")
+        print(f"❌ Error fetching M3U file: {e}")
+        links = []
+
+    # Always update/create JSON file, even if links is empty
+    count = update_json(links, JSON_FILE)
+    print(f"✅ Updated {JSON_FILE} with {count} links.")
+    print(f"link_count={count}")  # GitHub Actions output
 
 if __name__ == "__main__":
     main()
